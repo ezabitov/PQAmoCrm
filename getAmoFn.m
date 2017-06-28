@@ -1,17 +1,17 @@
 let
-getAmoFn = (login as text, hash as text, typeOfReport as text, limits as number) =>
+getAmoFn = (domen as text, login as text, hash as text, typeOfReport as text, limits as number) =>
 let
     //вводные
     authKey = "?USER_LOGIN="&login&"&USER_HASH="&hash,
-    authUrl = "https://unic.amocrm.ru/private/api/auth.php",
+    authUrl = "https://"&domen&".amocrm.ru/private/api/auth.php",
 
-    //генерируем массив с данными от 0 до 10к, с шагом в 500 и делаем из него таблицу
+    //генерируем массив с данными с шагом в 500 и делаем из него таблицу
     generateList = List.Generate(()=>1, each _ < limits, each _ + 500),
     listToTable = Table.FromList(generateList, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     numberToText = Table.TransformColumnTypes(listToTable,{{"Column1", type text}}),
 
     //забираем справочники из сведений аккаунта
-    getAccountInfo = Json.Document(Web.Contents("https://unic.amocrm.ru/private/api/v2/json/accounts/current"&authKey)),
+    getAccountInfo = Json.Document(Web.Contents("https://"&domen&".amocrm.ru/private/api/v2/json/accounts/current"&authKey)),
     getResponse = getAccountInfo[response],
     getResponse2 = getResponse[account],
 
@@ -28,7 +28,7 @@ let
     //генерим функцию подстановки данных массива в limit_offset, чтоб избежать лимита в 500 записей за раз
     getFn = (limitOffset as text) =>
     let
-        url =  "https://unic.amocrm.ru/private/api/v2/json/"&typeOfReport&"/list",
+        url =  "https://"&domen&".amocrm.ru/private/api/v2/json/"&typeOfReport&"/list",
         limits = "&limit_rows=500&limit_offset="&limitOffset,
         getAuth = Xml.Tables(Web.Contents(authUrl&authKey)),
         authTrue = Table.TransformColumnTypes(getAuth,{{"auth", type logical}}),
