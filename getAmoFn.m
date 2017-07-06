@@ -5,7 +5,7 @@ let
     authKey = "?USER_LOGIN="&login&"&USER_HASH="&hash,
     authUrl = "https://"&domen&".amocrm.ru/private/api/auth.php",
 
-    //генерируем массив с данными с шагом в 500 и делаем из него таблицу
+    //генерируем массив с данными от 0 до 10к, с шагом в 500 и делаем из него таблицу
     generateList = List.Generate(()=>1, each _ < limits, each _ + 500),
     listToTable = Table.FromList(generateList, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     numberToText = Table.TransformColumnTypes(listToTable,{{"Column1", type text}}),
@@ -88,7 +88,9 @@ let
     expandCustomFieldsGuide = Table.ExpandTableColumn(mergeWithStatusesName, "NewColumn", listOfCustomFields, listOfCustomFields),
     expandUsersName = Table.ExpandTableColumn(expandCustomFieldsGuide, "usersName", {"name"}, {"created_user_name"}),
     expandResponsibleName = Table.ExpandTableColumn(expandUsersName, "ResponsibleUserName", {"name"}, {"responsible_user_name"}),
-    expandStatusesName = Table.ExpandTableColumn(expandResponsibleName, "statusesName", {"name"}, {"status_name"}),
+    expandStatusesName = if typeOfReport = "leads"
+        then Table.ExpandTableColumn(expandResponsibleName, "statusesName", {"name"}, {"status_name"})
+        else expandResponsibleName,
     deleteOldCustomFields = if typeOfReport = "leads"
         then Table.RemoveColumns(expandStatusesName,{"custom_fields", "responsible_user_id", "created_user_id", "status_id"})
         else Table.RemoveColumns(expandStatusesName,{"custom_fields", "responsible_user_id", "created_user_id"})
