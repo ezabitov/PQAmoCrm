@@ -1,7 +1,20 @@
+/*
+     Сбор данных из AmoCRM в Excel/Power BI
+
+     Версия 1.1
+
+     1.1 
+     -- Добавлена автоматическая обработка пустого поля limits
+     -- Исправлены баги при обработки contacts
+
+     Создатель: Эльдар Забитов (http://zabitov.ru)
+*/
+
 let
-getAmoFn = (domen as text, login as text, hash as text, typeOfReport as text, limits as number) =>
+getAmoFn = (domen as text, login as text, hash as text, typeOfReport as text, limits as nullable number) =>
 let
     //вводные
+    limits = if limits = null then 100000 else limits,
     authKey = "?USER_LOGIN="&login&"&USER_HASH="&hash,
     authUrl = "https://"&domen&".amocrm.ru/private/api/auth.php",
 
