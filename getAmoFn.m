@@ -100,7 +100,7 @@ let
         then Table.NestedJoin(mergeWithRsponsibleUserName,{"status_id"},statusesChangeType,{"id"},"statusesName",JoinKind.LeftOuter)
         else mergeWithRsponsibleUserName,
     expandCustomFieldsGuide = Table.ExpandTableColumn(mergeWithStatusesName, "NewColumn", listOfCustomFields, listOfCustomFields),
-    changeTypeOfStatusId = Table.TransformColumnTypes(mergeWithCustomFields,{{"status_id", type text}}),
+    changeTypeOfStatusId = Table.TransformColumnTypes(expandCustomFieldsGuide,{{"status_id", type text}}),
     expandUsersName = Table.ExpandTableColumn(changeTypeOfStatusId, "usersName", {"name"}, {"created_user_name"}),
     expandResponsibleName = Table.ExpandTableColumn(expandUsersName, "ResponsibleUserName", {"name"}, {"responsible_user_name"}),
     expandStatusesName = if typeOfReport = "leads"
