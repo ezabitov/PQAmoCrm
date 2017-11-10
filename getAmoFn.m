@@ -3,7 +3,7 @@
 
      Версия 1.1
 
-     1.1 
+     1.1
      -- Добавлена автоматическая обработка пустого поля limits
      -- Исправлены баги при обработки contacts
 
@@ -37,6 +37,7 @@ let
     statusesRecord = getResponse2[leads_statuses],
     statusesToTable = Table.FromList(statusesRecord, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     statusesExpandNames = Table.ExpandRecordColumn(statusesToTable, "Column1", {"id", "name"}, {"id", "name"}),
+    statusesChangeType = Table.TransformColumnTypes(statusesExpandNames,{{"id", type text}}),
 
     //генерим функцию подстановки данных массива в limit_offset, чтоб избежать лимита в 500 записей за раз
     getFn = (limitOffset as text) =>
@@ -60,9 +61,9 @@ let
 
     //раскрываем список столбцов в зависимости от типа отчета
     expand1 = if typeOfReport = "leads" then
-        Table.ExpandRecordColumn(expandListLeads, "Data", {"id", "name", "date_create", "created_user_id", "last_modified", "account_id", "price", "responsible_user_id", "linked_company_id", "group_id", "pipeline_id", "date_close", "closest_task", "deleted", "status_id", "custom_fields", "main_contact_id"}, {"id", "name", "date_create", "created_user_id", "last_modified", "account_id", "price", "responsible_user_id", "linked_company_id", "group_id", "pipeline_id", "date_close", "closest_task", "deleted", "status_id", "custom_fields", "main_contact_id"})
+        Table.ExpandRecordColumn(expandListLeads, "Data", {"id", "name", "date_create", "created_user_id", "last_modified", "account_id", "price", "responsible_user_id", "linked_company_id", "group_id", "pipeline_id", "date_close", "closest_task", "deleted", "status_id", "custom_fields", "main_contact_id", "tags"}, {"id", "name", "date_create", "created_user_id", "last_modified", "account_id", "price", "responsible_user_id", "linked_company_id", "group_id", "pipeline_id", "date_close", "closest_task", "deleted", "status_id", "custom_fields", "main_contact_id", "tags"})
         else
-        Table.ExpandRecordColumn(expandListLeads, "Data", {"id", "name", "last_modified", "account_id", "date_create", "created_user_id", "responsible_user_id", "group_id", "closest_task", "linked_company_id", "company_name", "type", "custom_fields", "linked_leads_id"}, {"id", "name", "last_modified", "account_id", "date_create", "created_user_id", "responsible_user_id", "group_id", "closest_task", "linked_company_id", "company_name", "type", "custom_fields", "linked_leads_id"}),
+        Table.ExpandRecordColumn(expandListLeads, "Data", {"id", "name", "last_modified", "account_id", "date_create", "created_user_id", "responsible_user_id", "group_id", "closest_task", "linked_company_id", "company_name", "type", "custom_fields", "linked_leads_id", "tags"}, {"id", "name", "last_modified", "account_id", "date_create", "created_user_id", "responsible_user_id", "group_id", "closest_task", "linked_company_id", "company_name", "type", "custom_fields", "linked_leads_id", "tags"}),
 
     //timestamp to datetime
     timestampDateCreate = Table.AddColumn(expand1, "Date_create", each #datetime(1970,1,1,0,0,0)+#duration(0,0,0,[date_create])),
@@ -96,10 +97,11 @@ let
     mergeWithCreateUserName = Table.NestedJoin(mergeWithCustomFields,{"created_user_id"},usersExpandNames,{"id"},"usersName",JoinKind.LeftOuter),
     mergeWithRsponsibleUserName = Table.NestedJoin(mergeWithCreateUserName,{"responsible_user_id"},usersExpandNames,{"id"},"ResponsibleUserName",JoinKind.LeftOuter),
     mergeWithStatusesName = if typeOfReport = "leads"
-        then Table.NestedJoin(mergeWithRsponsibleUserName,{"status_id"},statusesExpandNames,{"id"},"statusesName",JoinKind.LeftOuter)
+        then Table.NestedJoin(mergeWithRsponsibleUserName,{"status_id"},statusesChangeType,{"id"},"statusesName",JoinKind.LeftOuter)
         else mergeWithRsponsibleUserName,
     expandCustomFieldsGuide = Table.ExpandTableColumn(mergeWithStatusesName, "NewColumn", listOfCustomFields, listOfCustomFields),
-    expandUsersName = Table.ExpandTableColumn(expandCustomFieldsGuide, "usersName", {"name"}, {"created_user_name"}),
+    changeTypeOfStatusId = = Table.TransformColumnTypes(mergeWithCustomFields,{{"status_id", type text}}),
+    expandUsersName = Table.ExpandTableColumn(changeTypeOfStatusId, "usersName", {"name"}, {"created_user_name"}),
     expandResponsibleName = Table.ExpandTableColumn(expandUsersName, "ResponsibleUserName", {"name"}, {"responsible_user_name"}),
     expandStatusesName = if typeOfReport = "leads"
         then Table.ExpandTableColumn(expandResponsibleName, "statusesName", {"name"}, {"status_name"})
