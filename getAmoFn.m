@@ -13,8 +13,8 @@
 let
 getAmoFn = (domen as text, login as text, hash as text, typeOfReport as text, limits as nullable number) =>
 let
-    //вводные
-    limits = if limits = null then 100000 else limits,
+  //вводные
+
     authKey = "?USER_LOGIN="&login&"&USER_HASH="&hash,
     authUrl = "https://"&domen&".amocrm.ru/private/api/auth.php",
 
@@ -32,6 +32,7 @@ let
     usersRecord = getResponse2[users],
     usersToTable = Table.FromList(usersRecord, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     usersExpandNames = Table.ExpandRecordColumn(usersToTable, "Column1", {"id", "name"}, {"id", "name"}),
+    usersExpandNamesToText = Table.TransformColumnTypes(usersExpandNames,{{"id", type text}}),
 
     //справочник названий статусов
     statusesRecord = getResponse2[leads_statuses],
@@ -76,9 +77,10 @@ let
     removeOldDates = if typeOfReport = "leads"
         then Table.RemoveColumns(timestampDateClose,{"date_create", "last_modified", "date_close"})
         else Table.RemoveColumns(timestampDateClose,{"date_create"}),
+    removeOldDatesToText = Table.TransformColumnTypes(removeOldDates,{{"created_user_id", type text}, {"responsible_user_id", type text}}),
 
     //генерируем справочник custom_fields
-    deleteOther1 = Table.SelectColumns(removeOldDates,{"id", "custom_fields"}),
+    deleteOther1 = Table.SelectColumns(removeOldDatesToText,{"id", "custom_fields"}),
     expandCustomFields = Table.ExpandListColumn(deleteOther1, "custom_fields"),
     unpivot = Table.UnpivotOtherColumns(expandCustomFields, {"id"}, "Атрибут", "Значение"),
     unpivot1 = Table.UnpivotOtherColumns(unpivot, {"id"}, "Атрибут.1", "Значение.1"),
@@ -93,9 +95,9 @@ let
     getCustomFieldsGuide = Table.Pivot(deleteOther2, List.Distinct(deleteOther2[Значение.1.name]), "Значение.1.name", "Значение.1.values.value"),
 
     //merge справочников и данных нашей таблицы
-    mergeWithCustomFields = Table.NestedJoin(removeOldDates,{"id"},getCustomFieldsGuide,{"id"},"NewColumn",JoinKind.LeftOuter),
-    mergeWithCreateUserName = Table.NestedJoin(mergeWithCustomFields,{"created_user_id"},usersExpandNames,{"id"},"usersName",JoinKind.LeftOuter),
-    mergeWithRsponsibleUserName = Table.NestedJoin(mergeWithCreateUserName,{"responsible_user_id"},usersExpandNames,{"id"},"ResponsibleUserName",JoinKind.LeftOuter),
+    mergeWithCustomFields = Table.NestedJoin(removeOldDatesToText,{"id"},getCustomFieldsGuide,{"id"},"NewColumn",JoinKind.LeftOuter),
+    mergeWithCreateUserName = Table.NestedJoin(mergeWithCustomFields,{"created_user_id"},usersExpandNamesToText,{"id"},"usersName",JoinKind.LeftOuter),
+    mergeWithRsponsibleUserName = Table.NestedJoin(mergeWithCreateUserName,{"responsible_user_id"},usersExpandNamesToText,{"id"},"ResponsibleUserName",JoinKind.LeftOuter),
     mergeWithStatusesName = if typeOfReport = "leads"
         then Table.NestedJoin(mergeWithRsponsibleUserName,{"status_id"},statusesChangeType,{"id"},"statusesName",JoinKind.LeftOuter)
         else mergeWithRsponsibleUserName,
