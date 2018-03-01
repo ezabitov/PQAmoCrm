@@ -1,5 +1,5 @@
 let
-guideConnect = (method as text, domen as text, login as text, hash as text, limits as nullable number) =>
+amoFn = (method as text, domen as text, login as text, hash as text, limits as nullable number) =>
     let
         authQuery =
             [
@@ -32,4 +32,4 @@ guideConnect = (method as text, domen as text, login as text, hash as text, limi
     in
         removeColumn
 in
-    guideConnect
+    amoFn
