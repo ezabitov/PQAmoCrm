@@ -15,7 +15,7 @@ authWebContents = Web.Contents(
                     Query=authQuery
                 ]),
 
-guideConnect = (url as text, authQuery as record) =>
+                guideConnect = (url as text, authQuery as record) =>
     let
     getAccountInfo = Json.Document(Web.Contents(
         url,
