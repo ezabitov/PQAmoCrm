@@ -27,7 +27,7 @@ getFn = (limits as text, url as text, authQuery as record) =>
     getResponse = getAccountInfo[response],
     getResponse2 = getResponse[account]
 in
-    getResponse2
+    getResponse2,
 
 
         getAccountInfo = guideConnect(url, authQuery),
