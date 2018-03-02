@@ -109,7 +109,7 @@ in
         expandResponsibleName = Table.ExpandTableColumn(expandCreaterName, "ResponsibleUser", {"name"}, {"ResponsibleUser.name"}),
         expandGroupsName = if groupsCheckEmpty = null
             then expandResponsibleName
-            else Table.ExpandTableColumn(expandResponsibleName, "GroupsName", {"name"}, {"GroupsName.name"}),
+            else Table.ExpandTableColumn(expandResponsibleName, "GroupName", {"name"}, {"GroupName.name"}),
             
         addColumnTypeOfElement = Table.AddColumn(expandGroupsName, "Тип элемента", each
             if [element_type] = "2" then "Сделка" else
