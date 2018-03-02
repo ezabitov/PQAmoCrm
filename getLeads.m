@@ -16,6 +16,17 @@ getFn = (limits as text, url as text, authQuery as record) =>
                     Query=authQuery
                 ]),
 
+          guideConnect = (function as text) =>
+            let
+                sourceFn = Expression.Evaluate(
+                    Text.FromBinary(
+                        Binary.Buffer(
+                            Web.Contents("https://raw.githubusercontent.com/ezabitov/PQAmoCrm/master/guideConnect.m")
+                        )
+                    ), #shared)
+            in
+                sourceFn,
+
         getAccountInfo = guideConnect(url, authQuery),
 
         //Имен пользователей
