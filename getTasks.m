@@ -14,7 +14,18 @@ authWebContents = Web.Contents(
                     RelativePath="/private/api/auth.php",
                     Query=authQuery
                 ]),
-
+guideConnect = (url as text, authQuery as record) =>
+    let
+    getAccountInfo = Json.Document(Web.Contents(
+        url,
+        [
+            RelativePath="/private/api/v2/json/accounts/current",
+            Query=authQuery
+        ])),
+    getResponse = getAccountInfo[response],
+    getResponse2 = getResponse[account]
+in
+    getResponse2,
         getAccountInfo = guideConnect(url, authQuery),
 
         //Имен пользователей
