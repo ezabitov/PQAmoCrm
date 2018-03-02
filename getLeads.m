@@ -16,12 +16,18 @@ getFn = (limits as text, url as text, authQuery as record) =>
                     Query=authQuery
                 ]),
 
-                guideConnect = Expression.Evaluate(
-                    Text.FromBinary(
-                        Binary.Buffer(
-                            Web.Contents("https://raw.githubusercontent.com/ezabitov/PQAmoCrm/master/guideConnect.m")
-                        )
-                    ), #shared),
+                guideConnect = (url as text, authQuery as record) =>
+    let
+    getAccountInfo = Json.Document(Web.Contents(
+        url,
+        [
+            RelativePath="/private/api/v2/json/accounts/current",
+            Query=authQuery
+        ])),
+    getResponse = getAccountInfo[response],
+    getResponse2 = getResponse[account]
+in
+    getResponse2
 
 
         getAccountInfo = guideConnect(url, authQuery),
