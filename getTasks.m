@@ -102,9 +102,9 @@ in
             mergeWithGroupsName,{"task_type"},
             tasktypeToText,{"id"},
             "TaskType",JoinKind.LeftOuter),
-    expandTasktype = Table.ExpandTableColumn(mergeWithTasktype, "TaskType", {"name"}, {"TaskType.name"}),
+    expandTasktype = Table.ExpandTableColumn(mergeWithGroupsName, "TaskType", {"name"}, {"TaskType.name"}),
     //expand
-        expandCreaterName = Table.ExpandTableColumn(mergeWithGroupsName, "CreatedUser", {"name"}, {"CreatedUser.name"}),
+        expandCreaterName = Table.ExpandTableColumn(mergeWithTasktype, "CreatedUser", {"name"}, {"CreatedUser.name"}),
         expandResponsibleName = Table.ExpandTableColumn(expandCreaterName, "ResponsibleUser", {"name"}, {"ResponsibleUser.name"}),
         expandGroupsName = if groupsCheckEmpty = null
             then expandResponsibleName
