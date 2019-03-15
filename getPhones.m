@@ -77,7 +77,7 @@ in
             authQuery,
             [limit_rows ="500"],
             [limit_offset=limits],
-            [note_type=10],
+            [note_type="10"],
             [type="contact"]}),
 
         getQuery  = Json.Document(Web.Contents(url,
