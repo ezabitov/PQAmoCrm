@@ -77,6 +77,7 @@ in
             authQuery,
             [limit_rows ="500"],
             [limit_offset=limits],
+            [note_type=10],
             [type="contact"]}),
 
         getQuery  = Json.Document(Web.Contents(url,
@@ -170,6 +171,6 @@ in
     #"Развернутый элемент NewPipeline" = Table.ExpandTableColumn(#"Развернутый элемент OldPipeline", "NewPipeline", {"name"}, {"NewPipeline.name"}),
     finaldel2 = Table.RemoveColumns(#"Развернутый элемент NewPipeline",{"STATUS_NEW", "STATUS_OLD", "PIPELINE_ID_OLD", "PIPELINE_ID_NEW"})
 in
-    expand2
+    delFinal
 in
 getFn
