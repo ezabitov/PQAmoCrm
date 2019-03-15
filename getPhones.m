@@ -89,7 +89,7 @@ in
         delOther = Table.SelectColumns(toTable,{"Value"}),
         expand = Table.ExpandRecordColumn(delOther, "Value", {"notes"}, {"notes"}),
         expand1 = Table.ExpandListColumn(expand, "notes"),
-        expand2 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
+        expand21 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
 
 newAuthQuery = Record.Combine({
             authQuery,
@@ -109,7 +109,7 @@ newAuthQuery = Record.Combine({
         expand1 = Table.ExpandListColumn(expand, "notes"),
         expand3 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
 
-expand2 = Table.Combine(expand2, expand3),
+expand2 = Table.Combine(expand21, expand3),
 
 
         //Перевод дат из timestamp
