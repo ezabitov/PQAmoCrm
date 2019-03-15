@@ -91,6 +91,26 @@ in
         expand1 = Table.ExpandListColumn(expand, "notes"),
         expand2 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
 
+newAuthQuery = Record.Combine({
+            authQuery,
+            [limit_rows ="500"],
+            [limit_offset=limits],
+            [note_type="11"],
+            [type="contact"]}),
+
+        getQuery  = Json.Document(Web.Contents(url,
+            [
+                RelativePath="/private/api/v2/json/notes/list",
+                Query=newAuthQuery
+            ])),
+        toTable = Record.ToTable(getQuery),
+        delOther = Table.SelectColumns(toTable,{"Value"}),
+        expand = Table.ExpandRecordColumn(delOther, "Value", {"notes"}, {"notes"}),
+        expand1 = Table.ExpandListColumn(expand, "notes"),
+        expand3 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
+
+expand2 = Table.Combine(expand2, expand3),
+
 
         //Перевод дат из timestamp
         timestampDateCreate = Table.AddColumn(expand2, "Date_create", each if [date_create] = 0 then null else #datetime(1970,1,1,0,0,0)+#duration(0,0,0,[date_create])),
