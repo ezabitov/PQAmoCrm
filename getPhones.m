@@ -188,7 +188,7 @@ in
         delOther = Table.SelectColumns(toTable,{"Value"}),
         expand = Table.ExpandRecordColumn(delOther, "Value", {"notes"}, {"notes"}),
         expand1 = Table.ExpandListColumn(expand, "notes"),
-        expand2 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
+        expand3 = Table.ExpandRecordColumn(expand1, "notes", {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}, {"id", "element_id", "element_type", "note_type", "date_create", "created_user_id", "last_modified", "text", "responsible_user_id", "account_id", "ATTACHEMENT", "group_id", "editable"}),
 
 
 
@@ -270,9 +270,9 @@ in
     #"Развернутый элемент OldPipeline" = Table.ExpandTableColumn(#"Развернутый элемент OldStatus", "OldPipeline", {"name"}, {"OldPipeline.name"}),
     #"Развернутый элемент NewPipeline" = Table.ExpandTableColumn(#"Развернутый элемент OldPipeline", "NewPipeline", {"name"}, {"NewPipeline.name"}),
     finaldel3 = Table.RemoveColumns(#"Развернутый элемент NewPipeline",{"STATUS_NEW", "STATUS_OLD", "PIPELINE_ID_OLD", "PIPELINE_ID_NEW"})
-expand4 = Table.Combine(finaldel2, finaldel3),
+expand4 = Table.Combine(expand2, expand3),
 
 in
-    delFinal
+    expand4
 in
 getFn
