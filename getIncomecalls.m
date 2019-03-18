@@ -77,6 +77,7 @@ in
             authQuery,
             [limit_rows ="500"],
             [limit_offset=limits],
+            [note_type="11"],
             [type="contact"]}),
 
         getQuery  = Json.Document(Web.Contents(url,
@@ -138,4 +139,3 @@ in
     delFinal
 in
 getFn
-
