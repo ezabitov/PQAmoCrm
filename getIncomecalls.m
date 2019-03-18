@@ -77,7 +77,6 @@ in
             authQuery,
             [limit_rows ="500"],
             [limit_offset=limits],
-            [note_type="10"],
             [type="contact"]}),
 
         getQuery  = Json.Document(Web.Contents(url,
@@ -136,6 +135,7 @@ in
         expandNoteType = Table.ExpandTableColumn(addColumnTypeOfElement, "NoteType", {"name"}, {"NoteType.name"}),
    delFinal = Table.RemoveColumns(expandNoteType,{"created_user_id", "responsible_user_id", "group_id", "note_type", "element_type"}),
 in
-   delFinal
+    delFinal
 in
 getFn
+
